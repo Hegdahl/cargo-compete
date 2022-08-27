@@ -7,7 +7,7 @@ use regex::Regex;
 use std::io;
 
 #[test]
-fn atcoder_practice_a() -> anyhow::Result<()> {
+fn atcoder_practice_a() -> eyre::Result<()> {
     let (output, tree) = run(
         "practice",
         "a",
@@ -61,7 +61,7 @@ fn run(
     url: &str,
     test_suite: &str,
     code: &str,
-) -> anyhow::Result<(String, serde_json::Value)> {
+) -> eyre::Result<(String, serde_json::Value)> {
     common::run(
         |cwd| -> _ {
             std::fs::write(

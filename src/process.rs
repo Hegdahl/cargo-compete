@@ -1,6 +1,6 @@
 use crate::shell::Shell;
-use anyhow::{bail, Context as _};
 use camino::{Utf8Path, Utf8PathBuf};
+use eyre::{bail, Context as _, ContextCompat};
 use itertools::Itertools as _;
 use std::{
     env,
@@ -55,7 +55,7 @@ impl<C: Presence<Utf8PathBuf>> ProcessBuilder<C> {
 }
 
 impl ProcessBuilder<Present> {
-    pub(crate) fn exec(&self) -> anyhow::Result<()> {
+    pub(crate) fn exec(&self) -> eyre::Result<()> {
         let status = self.status()?;
         if !status.success() {
             bail!("{} didn't exit successfully: {}", self, status);
@@ -63,16 +63,16 @@ impl ProcessBuilder<Present> {
         Ok(())
     }
 
-    pub(crate) fn exec_with_shell_status(&self, shell: &mut Shell) -> anyhow::Result<()> {
+    pub(crate) fn exec_with_shell_status(&self, shell: &mut Shell) -> eyre::Result<()> {
         shell.status("Running", self)?;
         self.exec()
     }
 
-    pub(crate) fn status(&self) -> anyhow::Result<ExitStatus> {
+    pub(crate) fn status(&self) -> eyre::Result<ExitStatus> {
         self.spawn(Stdio::inherit())?.wait().map_err(Into::into)
     }
 
-    fn read(&self) -> anyhow::Result<String> {
+    fn read(&self) -> eyre::Result<String> {
         let std::process::Output { status, stdout, .. } =
             self.spawn(Stdio::piped())?.wait_with_output()?;
         if !status.success() {
@@ -81,12 +81,12 @@ impl ProcessBuilder<Present> {
         String::from_utf8(stdout).with_context(|| "non UTF-8 output")
     }
 
-    pub(crate) fn read_with_shell_status(&self, shell: &mut Shell) -> anyhow::Result<String> {
+    pub(crate) fn read_with_shell_status(&self, shell: &mut Shell) -> eyre::Result<String> {
         shell.status("Running", self)?;
         self.read()
     }
 
-    fn spawn(&self, stdout: Stdio) -> anyhow::Result<std::process::Child> {
+    fn spawn(&self, stdout: Stdio) -> eyre::Result<std::process::Child> {
         let mut child = std::process::Command::new(&self.program)
             .args(&self.args)
             .current_dir(&self.cwd)
@@ -158,7 +158,7 @@ pub(crate) fn process(program: impl AsRef<Path>) -> ProcessBuilder<NotPresent> {
 pub(crate) fn with_which(
     program: impl AsRef<Path>,
     cwd: impl AsRef<Utf8Path>,
-) -> anyhow::Result<ProcessBuilder<Present>> {
+) -> eyre::Result<ProcessBuilder<Present>> {
     let (program, cwd) = (program.as_ref(), cwd.as_ref().to_owned());
     let program = which(program, &cwd)?.into();
 
@@ -174,13 +174,13 @@ pub(crate) fn with_which(
 pub(crate) fn which(
     binary_name: impl AsRef<OsStr>,
     cwd: impl AsRef<Utf8Path>,
-) -> anyhow::Result<PathBuf> {
+) -> eyre::Result<PathBuf> {
     let binary_name = binary_name.as_ref();
     which::which_in(binary_name, env::var_os("PATH"), cwd.as_ref())
         .with_context(|| format!("`{}` not found", binary_name.to_string_lossy()))
 }
 
-pub(crate) fn cargo_exe() -> anyhow::Result<PathBuf> {
+pub(crate) fn cargo_exe() -> eyre::Result<PathBuf> {
     env::var_os("CARGO")
         .with_context(|| "`$CARGO` should be present")
         .map(Into::into)

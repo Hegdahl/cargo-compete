@@ -42,7 +42,7 @@ pub struct OptCompeteRetrieveTestcases {
     pub color: ColorChoice,
 }
 
-pub(crate) fn run(opt: OptCompeteRetrieveTestcases, ctx: crate::Context<'_>) -> anyhow::Result<()> {
+pub(crate) fn run(opt: OptCompeteRetrieveTestcases, ctx: crate::Context<'_>) -> eyre::Result<()> {
     let OptCompeteRetrieveTestcases {
         full,
         overwrite,

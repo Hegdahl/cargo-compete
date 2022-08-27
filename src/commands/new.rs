@@ -3,8 +3,8 @@ use crate::{
     oj_api,
     shell::{ColorChoice, Shell},
 };
-use anyhow::{bail, Context as _};
 use camino::{Utf8Path, Utf8PathBuf};
+use eyre::{bail, ContextCompat as _};
 use heck::KebabCase as _;
 use itertools::Itertools as _;
 use liquid::object;
@@ -45,7 +45,7 @@ pub struct OptCompeteNew {
     pub contest: Option<String>,
 }
 
-pub fn run(opt: OptCompeteNew, ctx: crate::Context<'_>) -> anyhow::Result<()> {
+pub fn run(opt: OptCompeteNew, ctx: crate::Context<'_>) -> eyre::Result<()> {
     let OptCompeteNew {
         full,
         open,
@@ -283,7 +283,7 @@ pub fn run(opt: OptCompeteNew, ctx: crate::Context<'_>) -> anyhow::Result<()> {
                     }
                     Ok((problem_url, problem))
                 })
-                .collect::<anyhow::Result<BTreeMap<_, _>>>()?;
+                .collect::<eyre::Result<BTreeMap<_, _>>>()?;
 
             let group = &Group::OjApi(contest_id);
 
@@ -373,7 +373,7 @@ fn create_new_package(
     group: &Group,
     problems: &BTreeMap<&str, &Url>,
     shell: &mut Shell,
-) -> anyhow::Result<(Utf8PathBuf, Vec<Utf8PathBuf>)> {
+) -> eyre::Result<(Utf8PathBuf, Vec<Utf8PathBuf>)> {
     let template = cargo_compete_config.template(cargo_compete_config_path, shell)?;
     let template_new = template.new.as_ref().with_context(|| {
         format!(

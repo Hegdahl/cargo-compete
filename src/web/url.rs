@@ -1,20 +1,20 @@
-use anyhow::{anyhow, Context as _};
+use eyre::{eyre, ContextCompat as _};
 use std::borrow::Cow;
 use url::Url;
 
-pub(crate) fn atcoder_contest(url: &Url) -> anyhow::Result<String> {
+pub(crate) fn atcoder_contest(url: &Url) -> eyre::Result<String> {
     second_path_segment(url)
 }
 
-pub(crate) fn codeforces_contest(url: &Url) -> anyhow::Result<String> {
+pub(crate) fn codeforces_contest(url: &Url) -> eyre::Result<String> {
     second_path_segment(url)
 }
 
-pub(crate) fn yukicoder_contest(url: &Url) -> anyhow::Result<String> {
+pub(crate) fn yukicoder_contest(url: &Url) -> eyre::Result<String> {
     second_path_segment(url)
 }
 
-fn second_path_segment(url: &Url) -> anyhow::Result<String> {
+fn second_path_segment(url: &Url) -> eyre::Result<String> {
     let segments = url
         .path_segments()
         .map(|ss| ss.collect::<Vec<_>>())
@@ -33,7 +33,7 @@ fn second_path_segment(url: &Url) -> anyhow::Result<String> {
     decodor()
         .decode_utf8()
         .map(Cow::into_owned)
-        .map_err(|e| anyhow!("{}: {}", e, decodor().decode_utf8_lossy()))
+        .map_err(|e| eyre!("{}: {}", e, decodor().decode_utf8_lossy()))
 }
 
 #[cfg(test)]
@@ -41,7 +41,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn atcoder_contest() -> anyhow::Result<()> {
+    fn atcoder_contest() -> eyre::Result<()> {
         assert_eq!(
             "m-solutions2020",
             super::atcoder_contest(

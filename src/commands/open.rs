@@ -39,7 +39,7 @@ pub struct OptCompeteOpen {
     pub color: ColorChoice,
 }
 
-pub(crate) fn run(opt: OptCompeteOpen, ctx: crate::Context<'_>) -> anyhow::Result<()> {
+pub(crate) fn run(opt: OptCompeteOpen, ctx: crate::Context<'_>) -> eyre::Result<()> {
     let OptCompeteOpen {
         full,
         bin,

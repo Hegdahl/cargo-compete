@@ -27,7 +27,7 @@ pub struct OptCompeteLogin {
     pub platform: PlatformKind,
 }
 
-pub(crate) fn run(opt: OptCompeteLogin, ctx: crate::Context<'_>) -> anyhow::Result<()> {
+pub(crate) fn run(opt: OptCompeteLogin, ctx: crate::Context<'_>) -> eyre::Result<()> {
     let OptCompeteLogin { color, platform } = opt;
 
     let crate::Context {

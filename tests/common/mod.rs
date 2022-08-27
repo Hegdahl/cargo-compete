@@ -1,13 +1,13 @@
-use anyhow::Context as _;
 use cargo_compete::{shell::Shell, Opt};
+use eyre::Context as _;
 use ignore::{overrides::Override, WalkBuilder};
 use serde_json::json;
 use std::{io::BufRead, path::Path};
 use structopt::StructOpt as _;
 
 #[cfg(feature = "__test_with_credentials")]
-pub fn atcoder_credentials() -> anyhow::Result<impl BufRead> {
-    use anyhow::{ensure, Context as _};
+pub fn atcoder_credentials() -> eyre::Result<impl BufRead> {
+    use eyre::{ensure, Context as _};
     use std::{env, io::Cursor};
 
     let username =
@@ -27,12 +27,12 @@ pub fn atcoder_credentials() -> anyhow::Result<impl BufRead> {
 }
 
 pub fn run(
-    before: impl FnOnce(&Path) -> anyhow::Result<()>,
+    before: impl FnOnce(&Path) -> eyre::Result<()>,
     input: impl BufRead + 'static,
     args: &[&str],
     process_output: impl FnOnce(&Path, String) -> String,
     walk_override: impl FnOnce(&Path) -> Result<Override, ignore::Error>,
-) -> anyhow::Result<(String, serde_json::Value)> {
+) -> eyre::Result<(String, serde_json::Value)> {
     let workspace = tempfile::Builder::new()
         .prefix("cargo-compete-test-workspace")
         .tempdir()?;
@@ -70,7 +70,7 @@ pub fn run(
     Ok((output_content, tree))
 }
 
-fn tree(path: &Path, walk_override: Override) -> anyhow::Result<serde_json::Value> {
+fn tree(path: &Path, walk_override: Override) -> eyre::Result<serde_json::Value> {
     let mut tree = serde_json::Map::new();
 
     for entry in WalkBuilder::new(path)

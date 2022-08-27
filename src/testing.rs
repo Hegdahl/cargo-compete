@@ -1,8 +1,8 @@
 use crate::{project::PackageExt as _, shell::Shell};
-use anyhow::ensure;
 use az::SaturatingAs as _;
 use camino::{Utf8Path, Utf8PathBuf};
 use cargo_metadata as cm;
+use eyre::ensure;
 use human_size::{Byte, Size};
 use liquid::object;
 use maplit::btreemap;
@@ -34,7 +34,7 @@ pub(crate) struct Args<'a> {
     pub(crate) shell: &'a mut Shell,
 }
 
-pub(crate) fn test(args: Args<'_>) -> anyhow::Result<()> {
+pub(crate) fn test(args: Args<'_>) -> eyre::Result<()> {
     let Args {
         metadata,
         member,
@@ -67,7 +67,7 @@ pub(crate) fn test(args: Args<'_>) -> anyhow::Result<()> {
             test_suite_path.parent().unwrap().as_ref(),
             test_case_names,
             |override_problem_url| {
-                fn read(path: &Path) -> anyhow::Result<Arc<str>> {
+                fn read(path: &Path) -> eyre::Result<Arc<str>> {
                     crate::fs::read_to_string(path).map(Into::into)
                 }
 
@@ -76,7 +76,7 @@ pub(crate) fn test(args: Args<'_>) -> anyhow::Result<()> {
                 let system_test_cases_dir =
                     crate::web::retrieve_testcases::system_test_cases_dir(problem_url)?;
 
-                let text_files = |dir_name: &str| -> anyhow::Result<Vec<_>> {
+                let text_files = |dir_name: &str| -> eyre::Result<Vec<_>> {
                     let paths = crate::fs::read_dir(system_test_cases_dir.join(dir_name))?;
                     Ok(paths
                         .into_iter()
@@ -197,7 +197,7 @@ pub(crate) fn test_suite_path(
     bin_alias: &str,
     problem_url: &Url,
     shell: &mut Shell,
-) -> anyhow::Result<Utf8PathBuf> {
+) -> eyre::Result<Utf8PathBuf> {
     let contest = match PlatformKind::from_url(problem_url) {
         Ok(PlatformKind::Atcoder) => Some(snowchains_core::web::atcoder_contest_id(problem_url)?),
         Ok(PlatformKind::Codeforces) => {

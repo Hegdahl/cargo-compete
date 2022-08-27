@@ -3,7 +3,7 @@ use crate::{
     shell::ColorChoice,
     web::credentials,
 };
-use anyhow::{bail, Context as _};
+use eyre::{bail, Context as _};
 use indexmap::indexset;
 use snowchains_core::web::{
     Atcoder, AtcoderRetrieveSubmissionSummariesCredentials,
@@ -40,7 +40,7 @@ pub struct OptCompeteRetrieveSubmissionSummaries {
 pub(crate) fn run(
     opt: OptCompeteRetrieveSubmissionSummaries,
     ctx: crate::Context<'_>,
-) -> anyhow::Result<()> {
+) -> eyre::Result<()> {
     let OptCompeteRetrieveSubmissionSummaries {
         package,
         manifest_path,

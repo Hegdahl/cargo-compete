@@ -1,5 +1,5 @@
 use crate::shell::Shell;
-use anyhow::{anyhow, Context as _};
+use eyre::{eyre, Context as _, ContextCompat as _};
 use serde::{Deserialize, Serialize};
 use std::{cell::RefCell, env, path::PathBuf};
 
@@ -7,7 +7,7 @@ pub(crate) fn username_and_password<'a>(
     shell: &'a RefCell<&'a mut Shell>,
     username_prompt: &'static str,
     password_prompt: &'static str,
-) -> impl 'a + FnMut() -> anyhow::Result<(String, String)> {
+) -> impl 'a + FnMut() -> eyre::Result<(String, String)> {
     move || -> _ {
         let mut shell = shell.borrow_mut();
         let username = shell.read_reply(username_prompt)?;
@@ -16,7 +16,7 @@ pub(crate) fn username_and_password<'a>(
     }
 }
 
-pub(crate) fn dropbox_access_token() -> anyhow::Result<String> {
+pub(crate) fn dropbox_access_token() -> eyre::Result<String> {
     if let Some(value) = env_var("DROPBOX_ACCESS_TOKEN")? {
         return Ok(value);
     }
@@ -47,7 +47,7 @@ The access token must have these permissions.
     }
 }
 
-pub(crate) fn yukicoder_api_key(shell: &mut Shell) -> anyhow::Result<String> {
+pub(crate) fn yukicoder_api_key(shell: &mut Shell) -> eyre::Result<String> {
     if let Some(value) = env_var("YUKICODER_API_KEY")? {
         return Ok(value);
     }
@@ -63,7 +63,7 @@ pub(crate) fn yukicoder_api_key(shell: &mut Shell) -> anyhow::Result<String> {
     }
 }
 
-pub(crate) fn codeforces_api_key_and_secret(shell: &mut Shell) -> anyhow::Result<(String, String)> {
+pub(crate) fn codeforces_api_key_and_secret(shell: &mut Shell) -> eyre::Result<(String, String)> {
     if let (Some(api_key), Some(api_secret)) = (
         env_var("CODEFORCES_API_KEY")?,
         env_var("CODEFORCES_API_SECRET")?,
@@ -99,16 +99,16 @@ pub(crate) fn codeforces_api_key_and_secret(shell: &mut Shell) -> anyhow::Result
     }
 }
 
-fn env_var(name: &str) -> anyhow::Result<Option<String>> {
+fn env_var(name: &str) -> eyre::Result<Option<String>> {
     env::var_os(name)
         .map(|v| {
             v.into_string()
-                .map_err(|_| anyhow!("${} is not valid UTF-8", name))
+                .map_err(|_| eyre!("${} is not valid UTF-8", name))
         })
         .transpose()
 }
 
-fn token_path(file_name: &str) -> anyhow::Result<PathBuf> {
+fn token_path(file_name: &str) -> eyre::Result<PathBuf> {
     let data_local_dir =
         dirs_next::data_local_dir().with_context(|| "could not find the local data directory")?;
 

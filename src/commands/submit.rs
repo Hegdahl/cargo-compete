@@ -5,7 +5,7 @@ use crate::{
     shell::{ColorChoice, Shell},
     web::credentials,
 };
-use anyhow::{bail, Context as _};
+use eyre::{bail, Context as _};
 use human_size::Size;
 use liquid::object;
 use prettytable::{
@@ -88,7 +88,7 @@ pub struct OptCompeteSubmit {
     pub name_or_alias: Option<String>,
 }
 
-pub(crate) fn run(opt: OptCompeteSubmit, ctx: crate::Context<'_>) -> anyhow::Result<()> {
+pub(crate) fn run(opt: OptCompeteSubmit, ctx: crate::Context<'_>) -> eyre::Result<()> {
     let OptCompeteSubmit {
         no_test,
         no_watch,

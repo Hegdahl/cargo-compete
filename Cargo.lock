@@ -21,12 +21,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "anyhow"
-version = "1.0.54"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a99269dff3bc004caa411f38845c20303f1e393ca2bd6581576fa3a7f59577d"
-
-[[package]]
 name = "anymap"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -187,7 +181,6 @@ dependencies = [
 name = "cargo-compete"
 version = "0.10.4"
 dependencies = [
- "anyhow",
  "atty",
  "az",
  "base64",
@@ -196,6 +189,7 @@ dependencies = [
  "derivative",
  "dirs-next",
  "easy-ext",
+ "eyre",
  "fwdansi",
  "git2",
  "heck",
@@ -673,6 +667,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "eyre"
+version = "0.6.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4c2b6b5a29c02cdc822728b7d7b8ae1bab3e3b05d44522770ddd49722eeac7eb"
+dependencies = [
+ "indenter",
+ "once_cell",
+]
+
+[[package]]
 name = "fake-simd"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1088,6 +1092,12 @@ dependencies = [
  "walkdir",
  "winapi-util",
 ]
+
+[[package]]
+name = "indenter"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ce23b50ad8242c51a442f3ff322d56b02f08852c77e4c0b4d3fd684abc89c683"
 
 [[package]]
 name = "indexmap"
@@ -2430,10 +2440,7 @@ checksum = "f2dd574626839106c320a323308629dcb1acfc96e32a8cba364ddc61ac23ee83"
 [[package]]
 name = "snowchains_core"
 version = "0.13.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f181e9d60ccf594985289ac2ed908df84ac645e73c9f0563a748027033ad375"
 dependencies = [
- "anyhow",
  "camino",
  "chrono",
  "cookie_store",
@@ -2441,6 +2448,7 @@ dependencies = [
  "derive_more",
  "easy-ext",
  "either",
+ "eyre",
  "form_urlencoded",
  "fs2",
  "futures-util",

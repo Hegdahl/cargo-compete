@@ -1,6 +1,6 @@
 use crate::shell::Shell;
-use anyhow::{bail, Context as _};
 use camino::Utf8Path;
+use eyre::{bail, Context as _, ContextCompat as _};
 use git2::Repository;
 use serde_json::json;
 use std::{borrow::Borrow, path::Path};
@@ -13,7 +13,7 @@ pub(crate) fn open(
     pkg_manifest_dir: &Utf8Path,
     process_cwd: &Utf8Path,
     shell: &mut Shell,
-) -> anyhow::Result<()> {
+) -> eyre::Result<()> {
     for url in urls {
         let url = url.borrow();
         shell.status("Opening", url)?;
@@ -21,7 +21,7 @@ pub(crate) fn open(
     }
 
     if let Some(open) = open {
-        fn ensure_utf8(path: &Path) -> anyhow::Result<&str> {
+        fn ensure_utf8(path: &Path) -> eyre::Result<&str> {
             path.to_str()
                 .with_context(|| format!("must be UTF-8: {:?}", path.display()))
         }

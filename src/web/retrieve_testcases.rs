@@ -4,9 +4,9 @@ use crate::{
     shell::Shell,
     web::credentials,
 };
-use anyhow::{ensure, Context};
 use camino::{Utf8Path, Utf8PathBuf};
 use cargo_metadata as cm;
+use eyre::{ensure, ContextCompat as _};
 use indexmap::{indexmap, IndexMap};
 use maplit::{btreemap, btreeset};
 use percent_encoding::PercentDecode;
@@ -35,7 +35,7 @@ pub(crate) fn dl_only_system_test_cases(
     cookies_path: &Path,
     cwd: &Utf8Path,
     shell: &mut Shell,
-) -> anyhow::Result<()> {
+) -> eyre::Result<()> {
     let system_test_cases_dir = &system_test_cases_dir(url)?;
     let in_dir = &system_test_cases_dir.join("in");
     let out_dir = &system_test_cases_dir.join("out");
@@ -116,7 +116,7 @@ pub(crate) fn dl_for_existing_package(
     test_suite_path: &liquid::Template,
     cookies_path: &Path,
     shell: &mut Shell,
-) -> anyhow::Result<()> {
+) -> eyre::Result<()> {
     let mut snowchains_targets: BTreeMap<_, BTreeMap<_, BTreeSet<_>>> = btreemap!();
     let mut oj_targets: BTreeMap<_, BTreeSet<_>> = btreemap!();
     let mut bin_name_aliases = bin_name_aliases.cloned();
@@ -217,7 +217,7 @@ pub(crate) fn dl_from_atcoder(
     full: bool,
     cookies_path: &Path,
     shell: &mut Shell,
-) -> anyhow::Result<Vec<Problem<String>>> {
+) -> eyre::Result<Vec<Problem<String>>> {
     let shell = RefCell::new(shell.borrow_mut());
 
     let credentials = AtcoderRetrieveSampleTestCasesCredentials {
@@ -255,7 +255,7 @@ pub(crate) fn dl_from_codeforces(
     targets: ProblemsInContest,
     cookies_path: &Path,
     shell: &mut Shell,
-) -> anyhow::Result<Vec<Problem<String>>> {
+) -> eyre::Result<Vec<Problem<String>>> {
     let shell = RefCell::new(shell.borrow_mut());
 
     let credentials = CodeforcesRetrieveSampleTestCasesCredentials {
@@ -283,7 +283,7 @@ pub(crate) fn dl_from_yukicoder(
     targets: YukicoderRetrieveTestCasesTargets,
     full: bool,
     shell: &mut Shell,
-) -> anyhow::Result<Vec<Problem<String>>> {
+) -> eyre::Result<Vec<Problem<String>>> {
     let full = if full {
         Some(RetrieveFullTestCases {
             credentials: YukicoderRetrieveFullTestCasesCredentials {
@@ -307,7 +307,7 @@ pub(crate) fn dl_from_yukicoder(
     .map(|RetrieveTestCasesOutcome { problems, .. }| problems.into_iter().map(Into::into).collect())
 }
 
-pub(crate) fn system_test_cases_dir(problem_url: &Url) -> anyhow::Result<PathBuf> {
+pub(crate) fn system_test_cases_dir(problem_url: &Url) -> eyre::Result<PathBuf> {
     let system_test_cases_dir = dirs_next::cache_dir()
         .with_context(|| "could not find the cache directory")?
         .join("cargo-compete")
@@ -331,7 +331,7 @@ pub(crate) fn save_test_cases<I>(
     bin_names: impl Fn(&Url, &I) -> Vec<String>,
     bin_aliases: impl Fn(&Url, &I) -> Vec<String>,
     shell: &mut Shell,
-) -> anyhow::Result<Vec<Utf8PathBuf>> {
+) -> eyre::Result<Vec<Utf8PathBuf>> {
     let mut acc = vec![];
 
     for Problem {
@@ -533,7 +533,7 @@ impl Problem<String> {
     pub(crate) fn from_oj_api_with_alphabet(
         problem: oj_api::Problem,
         system: bool,
-    ) -> anyhow::Result<Self> {
+    ) -> eyre::Result<Self> {
         let Problem {
             index,
             url,

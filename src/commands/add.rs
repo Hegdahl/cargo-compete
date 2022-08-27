@@ -4,8 +4,8 @@ use crate::{
     project::{MetadataExt as _, PackageExt as _},
     shell::ColorChoice,
 };
-use anyhow::{bail, ensure, Context as _};
 use cargo_metadata as cm;
+use eyre::{bail, ensure, Context as _, ContextCompat as _};
 use liquid::object;
 use maplit::{btreeset, hashmap};
 use once_cell::sync::Lazy;
@@ -46,7 +46,7 @@ pub struct OptCompeteAdd {
     pub args: Vec<String>,
 }
 
-pub(crate) fn run(opt: OptCompeteAdd, ctx: crate::Context<'_>) -> anyhow::Result<()> {
+pub(crate) fn run(opt: OptCompeteAdd, ctx: crate::Context<'_>) -> eyre::Result<()> {
     let OptCompeteAdd {
         full,
         open,
@@ -167,7 +167,7 @@ pub(crate) fn run(opt: OptCompeteAdd, ctx: crate::Context<'_>) -> anyhow::Result
             }
             Ok(problem)
         })
-        .collect::<anyhow::Result<_>>()?,
+        .collect::<eyre::Result<_>>()?,
     };
 
     let manifest =

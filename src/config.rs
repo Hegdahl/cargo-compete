@@ -1,8 +1,8 @@
 use crate::{project::PackageExt as _, shell::Shell};
-use anyhow::{bail, Context as _};
 use camino::{Utf8Path, Utf8PathBuf};
 use cargo_metadata as cm;
 use derivative::Derivative;
+use eyre::{bail, Context as _, ContextCompat as _};
 use heck::KebabCase as _;
 use indexmap::indexset;
 use liquid::object;
@@ -24,7 +24,7 @@ pub(crate) fn generate(
     new_platform: PlatformKind,
     test_toolchain: &str,
     submit_via_bianry: bool,
-) -> anyhow::Result<String> {
+) -> eyre::Result<String> {
     let generated = liquid::ParserBuilder::with_stdlib()
         .build()?
         .parse(include_str!("../resources/compete.toml.liquid"))
@@ -44,7 +44,7 @@ pub(crate) fn generate(
 pub(crate) fn locate(
     cwd: impl AsRef<Path>,
     cli_opt_path: Option<impl AsRef<Utf8Path>>,
-) -> anyhow::Result<Utf8PathBuf> {
+) -> eyre::Result<Utf8PathBuf> {
     let cwd = cwd.as_ref();
 
     let config_path = if let Some(cli_opt_path) = cli_opt_path {
@@ -69,10 +69,7 @@ pub(crate) fn locate(
         .with_context(|| format!("non UTF-8 path: {:?}", config_path.display()))
 }
 
-pub(crate) fn load(
-    path: impl AsRef<Path>,
-    shell: &mut Shell,
-) -> anyhow::Result<CargoCompeteConfig> {
+pub(crate) fn load(path: impl AsRef<Path>, shell: &mut Shell) -> eyre::Result<CargoCompeteConfig> {
     let path = path.as_ref();
 
     let unused = &mut indexset!();
@@ -94,7 +91,7 @@ pub(crate) fn load(
 pub(crate) fn load_for_package(
     package: &cm::Package,
     shell: &mut Shell,
-) -> anyhow::Result<(CargoCompeteConfig, Utf8PathBuf)> {
+) -> eyre::Result<(CargoCompeteConfig, Utf8PathBuf)> {
     let manifest_dir = package.manifest_path.with_file_name("");
     let path = if let Some(config) = package.read_package_metadata(shell)?.config {
         manifest_dir.join(config)
@@ -138,7 +135,7 @@ impl CargoCompeteConfig {
         &self,
         config_path: &Utf8Path,
         shell: &mut Shell,
-    ) -> anyhow::Result<CargoCompeteConfigTemplate> {
+    ) -> eyre::Result<CargoCompeteConfigTemplate> {
         if let Some(template) = &self.template {
             Ok(template.clone())
         } else if let Some(CargoCompeteConfigNewTemplate {
@@ -635,12 +632,12 @@ mod tests {
     use snowchains_core::web::PlatformKind;
 
     #[test]
-    fn generate() -> anyhow::Result<()> {
+    fn generate() -> eyre::Result<()> {
         fn generate(
             template_new_dependencies_content: bool,
             template_new_lockfile: bool,
             submit_via_bianry: bool,
-        ) -> anyhow::Result<()> {
+        ) -> eyre::Result<()> {
             let generated = super::generate(
                 "2018",
                 template_new_dependencies_content
@@ -662,9 +659,9 @@ mod tests {
     }
 
     #[test]
-    fn liquid_template_with_custom_filter() -> anyhow::Result<()> {
+    fn liquid_template_with_custom_filter() -> eyre::Result<()> {
         let output = super::liquid_template_with_custom_filter("{{ s | kebabcase }}")
-            .map_err(anyhow::Error::msg)?
+            .map_err(eyre::Error::msg)?
             .render(&object!({ "s": "FooBarBaz" }))?;
         assert_eq!("foo-bar-baz", output);
         Ok(())

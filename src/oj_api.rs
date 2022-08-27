@@ -1,6 +1,6 @@
 use crate::shell::Shell;
-use anyhow::{bail, Context as _};
 use camino::Utf8Path;
+use eyre::{bail, Context as _};
 use itertools::Itertools as _;
 use serde::{
     de::{DeserializeOwned, Error as _},
@@ -14,7 +14,7 @@ pub(crate) fn get_problem(
     system: bool,
     cwd: &Utf8Path,
     shell: &mut Shell,
-) -> anyhow::Result<Problem> {
+) -> eyre::Result<Problem> {
     let args = &mut vec!["get-problem", url.as_ref()];
     if system {
         args.push("--system".as_ref());
@@ -26,7 +26,7 @@ pub(crate) fn get_contest(
     url: &Url,
     cwd: &Utf8Path,
     shell: &mut Shell,
-) -> anyhow::Result<Vec<(Url, Option<String>)>> {
+) -> eyre::Result<Vec<(Url, Option<String>)>> {
     let Contest { problems } = call(&["get-contest", url.as_ref()], cwd, shell)?;
     return Ok(problems
         .into_iter()
@@ -55,7 +55,7 @@ pub(crate) fn guess_language_id(
     file: &Path,
     cwd: &Utf8Path,
     shell: &mut Shell,
-) -> anyhow::Result<String> {
+) -> eyre::Result<String> {
     return call(
         &[
             OsStr::new("guess-language-id"),
@@ -80,7 +80,7 @@ pub(crate) fn submit_code(
     language: &str,
     cwd: &Utf8Path,
     shell: &mut Shell,
-) -> anyhow::Result<Url> {
+) -> eyre::Result<Url> {
     return call(
         &[
             "submit-code".as_ref(),
@@ -105,7 +105,7 @@ fn call<T: DeserializeOwned, S: AsRef<OsStr>>(
     args: &[S],
     cwd: &Utf8Path,
     shell: &mut Shell,
-) -> anyhow::Result<T> {
+) -> eyre::Result<T> {
     let oj_api_exe = which::which_in("oj-api", env::var_os("PATH"), cwd)
         .with_context(|| "`oj-api` not found")?;
 

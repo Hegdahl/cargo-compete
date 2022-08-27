@@ -26,7 +26,7 @@ pub struct OptCompeteWatchSubmissions {
     pub contest: String,
 }
 
-pub(crate) fn run(opt: OptCompeteWatchSubmissions, ctx: crate::Context<'_>) -> anyhow::Result<()> {
+pub(crate) fn run(opt: OptCompeteWatchSubmissions, ctx: crate::Context<'_>) -> eyre::Result<()> {
     let OptCompeteWatchSubmissions {
         color,
         platform,

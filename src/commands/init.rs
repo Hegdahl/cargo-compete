@@ -34,7 +34,7 @@ pub struct OptCompeteInit {
     path: PathBuf,
 }
 
-pub(crate) fn run(opt: OptCompeteInit, ctx: crate::Context<'_>) -> anyhow::Result<()> {
+pub(crate) fn run(opt: OptCompeteInit, ctx: crate::Context<'_>) -> eyre::Result<()> {
     let OptCompeteInit {
         color,
         platform,
@@ -71,7 +71,7 @@ pub(crate) fn run(opt: OptCompeteInit, ctx: crate::Context<'_>) -> anyhow::Resul
 
     crate::fs::create_dir_all(&path)?;
 
-    let mut write_with_status = |file_name: &str, content: &str| -> anyhow::Result<()> {
+    let mut write_with_status = |file_name: &str, content: &str| -> eyre::Result<()> {
         let path = path.join(file_name);
         crate::fs::write(&path, content)?;
         shell.status("Wrote", path.display())?;

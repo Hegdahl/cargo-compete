@@ -6,7 +6,7 @@ use snowchains_core::web::PlatformKind;
 use std::io::BufRead;
 
 #[test]
-fn atcoder_abc003() -> anyhow::Result<()> {
+fn atcoder_abc003() -> eyre::Result<()> {
     let (output, tree) = run(PlatformKind::Atcoder, "abc003", &b""[..])?;
     assert_snapshot!("atcoder_abc003_output", output);
     assert_json_snapshot!("atcoder_abc003_file_tree", tree, { r#".**["Cargo.lock"]"# => ".." });
@@ -14,7 +14,7 @@ fn atcoder_abc003() -> anyhow::Result<()> {
 }
 
 #[test]
-fn atcoder_abc007() -> anyhow::Result<()> {
+fn atcoder_abc007() -> eyre::Result<()> {
     let (output, tree) = run(PlatformKind::Atcoder, "abc007", &b""[..])?;
     assert_snapshot!("atcoder_abc007_output", output);
     assert_json_snapshot!("atcoder_abc007_file_tree", tree, { r#".**["Cargo.lock"]"# => ".." });
@@ -22,7 +22,7 @@ fn atcoder_abc007() -> anyhow::Result<()> {
 }
 
 #[test]
-fn atcoder_agc047() -> anyhow::Result<()> {
+fn atcoder_agc047() -> eyre::Result<()> {
     let (output, tree) = run(PlatformKind::Atcoder, "agc047", &b""[..])?;
     assert_snapshot!("atcoder_agc047_output", output);
     assert_json_snapshot!("atcoder_agc047_file_tree", tree, { r#".**["Cargo.lock"]"# => ".." });
@@ -30,7 +30,7 @@ fn atcoder_agc047() -> anyhow::Result<()> {
 }
 
 #[test]
-fn atcoder_m_solutions2020() -> anyhow::Result<()> {
+fn atcoder_m_solutions2020() -> eyre::Result<()> {
     let (output, tree) = run(PlatformKind::Atcoder, "m-solutions2020", &b""[..])?;
     assert_snapshot!("atcoder_m_solutions2020_output", output);
     assert_json_snapshot!("atcoder_m_solutions2020_file_tree", tree, { r#".**["Cargo.lock"]"# => ".." });
@@ -39,7 +39,7 @@ fn atcoder_m_solutions2020() -> anyhow::Result<()> {
 
 #[cfg(feature = "__test_with_credentials")]
 #[test]
-fn atcoder_practice() -> anyhow::Result<()> {
+fn atcoder_practice() -> eyre::Result<()> {
     let (output, tree) = run(
         PlatformKind::Atcoder,
         "practice",
@@ -52,7 +52,7 @@ fn atcoder_practice() -> anyhow::Result<()> {
 
 // currently broken
 //#[test]
-//fn yukicoder_contest_100() -> anyhow::Result<()> {
+//fn yukicoder_contest_100() -> eyre::Result<()> {
 //    let (output, tree) = run(PlatformKind::Yukicoder, "100", &b""[..])?;
 //    assert_snapshot!("yukicoder_contest_100_output", output);
 //    assert_json_snapshot!("yukicoder_contest_100_file_tree", tree, { r#".**["Cargo.lock"]"# => ".." });
@@ -63,7 +63,7 @@ fn run(
     platform: PlatformKind,
     contest: &str,
     input: impl BufRead + 'static,
-) -> anyhow::Result<(String, serde_json::Value)> {
+) -> eyre::Result<(String, serde_json::Value)> {
     common::run(
         |cwd| -> _ {
             std::fs::write(

@@ -119,7 +119,7 @@ pub struct Context<'s> {
     pub shell: &'s mut Shell,
 }
 
-pub fn run(opt: OptCompete, ctx: Context<'_>) -> anyhow::Result<()> {
+pub fn run(opt: OptCompete, ctx: Context<'_>) -> eyre::Result<()> {
     match opt {
         OptCompete::Init(opt) => commands::init::run(opt, ctx),
         OptCompete::Migrate(OptCompeteMigrate::CargoAtcoder(opt)) => {

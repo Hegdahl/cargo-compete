@@ -30,7 +30,7 @@ pub struct OptCompeteParticipate {
     pub contest: String,
 }
 
-pub(crate) fn run(opt: OptCompeteParticipate, ctx: crate::Context<'_>) -> anyhow::Result<()> {
+pub(crate) fn run(opt: OptCompeteParticipate, ctx: crate::Context<'_>) -> eyre::Result<()> {
     let OptCompeteParticipate {
         color,
         platform,

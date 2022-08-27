@@ -1,8 +1,8 @@
 use crate::shell::Shell;
-use anyhow::{bail, Context as _};
 use camino::{Utf8Path, Utf8PathBuf};
 use cargo_metadata as cm;
 use easy_ext::ext;
+use eyre::{bail, Context as _, ContextCompat as _};
 use indexmap::{indexset, IndexMap};
 use itertools::Itertools as _;
 use serde::{
@@ -90,7 +90,7 @@ impl PackageMetadataCargoCompete {
     pub(crate) fn bin_like_by_name_or_alias(
         &self,
         name_or_alias: impl AsRef<str>,
-    ) -> anyhow::Result<(&str, &PackageMetadataCargoCompeteBinExample)> {
+    ) -> eyre::Result<(&str, &PackageMetadataCargoCompeteBinExample)> {
         let bin_name_or_alias = name_or_alias.as_ref();
 
         match *itertools::chain(&self.bin, &self.example)
@@ -126,7 +126,7 @@ impl cm::Metadata {
     pub(crate) fn query_for_member<S: AsRef<str>>(
         &self,
         spec: Option<S>,
-    ) -> anyhow::Result<&cm::Package> {
+    ) -> eyre::Result<&cm::Package> {
         if let Some(spec_str) = spec {
             let spec_str = spec_str.as_ref();
             let spec = spec_str.parse::<krates::PkgSpec>()?;
@@ -180,7 +180,7 @@ impl cm::Package {
     pub(crate) fn read_package_metadata(
         &self,
         shell: &mut Shell,
-    ) -> anyhow::Result<PackageMetadataCargoCompete> {
+    ) -> eyre::Result<PackageMetadataCargoCompete> {
         let unused = &mut indexset!();
 
         let deserializer = self
@@ -208,7 +208,7 @@ impl cm::Package {
     pub(crate) fn bin_like_target_by_name(
         &self,
         name: impl AsRef<str>,
-    ) -> anyhow::Result<&cm::Target> {
+    ) -> eyre::Result<&cm::Target> {
         let name = name.as_ref();
 
         self.targets
@@ -222,7 +222,7 @@ impl cm::Package {
     pub(crate) fn bin_target_by_src_path(
         &self,
         src_path: impl AsRef<Path>,
-    ) -> anyhow::Result<&cm::Target> {
+    ) -> eyre::Result<&cm::Target> {
         let src_path = src_path.as_ref();
 
         self.targets
@@ -246,7 +246,7 @@ impl cm::Package {
     }
 }
 
-pub(crate) fn locate_project(cwd: impl AsRef<Path>) -> anyhow::Result<PathBuf> {
+pub(crate) fn locate_project(cwd: impl AsRef<Path>) -> eyre::Result<PathBuf> {
     let cwd = cwd.as_ref();
 
     cwd.ancestors()
@@ -282,10 +282,7 @@ pub(crate) fn cargo_metadata_no_deps(
         .exec()
 }
 
-pub(crate) fn set_cargo_config_build_target_dir(
-    dir: &Path,
-    shell: &mut Shell,
-) -> anyhow::Result<()> {
+pub(crate) fn set_cargo_config_build_target_dir(dir: &Path, shell: &mut Shell) -> eyre::Result<()> {
     crate::fs::create_dir_all(dir.join(".cargo"))?;
 
     let cargo_config_path = dir.join(".cargo").join("config.toml");
@@ -326,7 +323,7 @@ mod tests {
     use toml::toml;
 
     #[test]
-    fn deserialize_package_metadata_cargo_compete() -> anyhow::Result<()> {
+    fn deserialize_package_metadata_cargo_compete() -> eyre::Result<()> {
         let expected = PackageMetadataCargoCompete {
             config: None,
             bin: indexmap!(

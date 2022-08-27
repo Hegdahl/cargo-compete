@@ -2,7 +2,7 @@ use crate::{
     project::{MetadataExt as _, PackageExt as _},
     shell::ColorChoice,
 };
-use anyhow::{anyhow, Context as _};
+use eyre::{eyre, Context as _};
 use if_chain::if_chain;
 use ignore::{overrides::OverrideBuilder, WalkBuilder};
 use itertools::Itertools as _;
@@ -41,10 +41,7 @@ pub struct OptCompeteMigrateCargoAtcoder {
     pub path: PathBuf,
 }
 
-pub(crate) fn run(
-    opt: OptCompeteMigrateCargoAtcoder,
-    ctx: crate::Context<'_>,
-) -> anyhow::Result<()> {
+pub(crate) fn run(opt: OptCompeteMigrateCargoAtcoder, ctx: crate::Context<'_>) -> eyre::Result<()> {
     let OptCompeteMigrateCargoAtcoder {
         glob_case_insensitive,
         glob,
@@ -128,7 +125,7 @@ pub(crate) fn run(
                     manifest_dir
                         .into_os_string()
                         .into_string()
-                        .map_err(|s| anyhow!("invalid utf-8 path: {:?}", s))?
+                        .map_err(|s| eyre!("invalid utf-8 path: {:?}", s))?
                 }
             });
             manifest["package"]["metadata"]["cargo-compete"]["bin"] = toml_edit::Item::Table({
@@ -194,7 +191,7 @@ target-dir = ""
     }
 
     let cargo_atcoder_config = (|| -> _ {
-        fn parse(path: &Path) -> anyhow::Result<toml_edit::Document> {
+        fn parse(path: &Path) -> eyre::Result<toml_edit::Document> {
             crate::fs::read_to_string(path)?.parse().with_context(|| {
                 format!(
                     "could not parse the cargo-atcoder config at `{}`",

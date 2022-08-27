@@ -61,7 +61,7 @@ pub struct OptCompeteTest {
     pub name_or_alias: Option<String>,
 }
 
-pub(crate) fn run(opt: OptCompeteTest, ctx: crate::Context<'_>) -> anyhow::Result<()> {
+pub(crate) fn run(opt: OptCompeteTest, ctx: crate::Context<'_>) -> eyre::Result<()> {
     let OptCompeteTest {
         src,
         testcases,
